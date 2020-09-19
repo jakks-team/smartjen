@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>SmartJen Technical Assessment</title>
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<style>
+		#sortable { list-style-type: none; margin: 0; padding: 0; }
+		#sortable li { padding: 0.4em; padding-left: 1.5em; min-height: 18px; }
+		</style>
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script>
+		function rearrangeSequence() {
+			let order = 1;
+			$("#sortable>li").each(function(key, value) {
+				$(value).find("input[name=\"question_sequence[]\"]").val(order++);
+			});
+		}
+		function reassignTrigger() {
+			$(".question-remove").off('click');
+			$(".question-remove").on('click', removeListItem);
+			$(".sectionType").off('change');
+			$(".sectionType").on('change', changeSectionType);
+		}
+		function removeListItem() {
+			$(this).closest("li").remove();
+			rearrangeSequence();
+		}
+		function changeSectionType() {
+			let typeSelect = $(this);
+			let sectionField = null;
+			if(typeSelect.val() === "title") {
+				sectionField = $("#titleTemplate").clone().show().removeAttr("id");
+			} else if(typeSelect.val() === "text") {
+				sectionField = $("#textTemplate").clone().show().removeAttr("id");
+			} else {
+				sectionField = $("<div>Invalid Type</div>");
+			}
+			typeSelect.closest("li").append(sectionField);
+			typeSelect.hide();
+			reassignTrigger();
+		}
+		$( function() {
+			$("#sortable").sortable({
+				update: rearrangeSequence
+			});
+			$("#sortable").disableSelection();
+			$(".question-remove").on('click', removeListItem);
+			$("#addSection").on('click', function() {
+				let biggestId = 0;
+				$("#sortable>li").each(function(key, value) {
+					let currId = parseInt($(value).attr("id"));
+					if(currId > biggestId) {
+						biggestId = currId;
+					}
+				});
+				let newField = $("#newSectionTemplate").clone().attr("id", (biggestId + 1));
+				newField.find("input[name=\"question_sequence[]\"]").val(biggestId+1);
+				newField.show();
+				$("#sortable").append(newField);
+				reassignTrigger();
+			});
+		} );
+		</script>
+	</head>
+	<body>
+		<ul id="sortable">
+			<li id="1">
+				<input type="hidden" name="question_sequence[]" value="1" />
+				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+				<div class="question_wrapper">
+					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
+					<span class="question_category">
+						[Whole Numbers] Addition and Subtraction of Whole Numbers
+					</span>
+					<span class="question_difficulty">(2 Marks, Normal)</span>
+					Extra content of Question here!
+					Question 1!
+				</div>
+			</li>
+			<li id="2">
+				<input type="hidden" name="question_sequence[]" value="2" />
+				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+				<div class="question_wrapper">
+					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
+					<span class="question_category">
+						[Whole Numbers] Addition and Subtraction of Whole Numbers
+					</span>
+					<span class="question_difficulty">(2 Marks, Normal)</span>
+					Extra content of Question here!
+					Question 2!
+				</div>
+			</li>
+			<li id="3">
+				<input type="hidden" name="question_sequence[]" value="3" />
+				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+				<div class="question_wrapper">
+					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
+					<span class="question_category">
+						[Whole Numbers] Addition and Subtraction of Whole Numbers
+					</span>
+					<span class="question_difficulty">(2 Marks, Normal)</span>
+					Extra content of Question here!
+					Question 3!
+				</div>
+			</li>
+			<li id="4">
+				<input type="hidden" name="question_sequence[]" value="4" />
+				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+				<div class="question_wrapper">
+					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
+					<span class="question_category">
+						[Whole Numbers] Addition and Subtraction of Whole Numbers
+					</span>
+					<span class="question_difficulty">(2 Marks, Normal)</span>
+					Extra content of Question here!
+					Question 4!
+				</div>
+			</li>
+			<li id="5">
+				<input type="hidden" name="question_sequence[]" value="5" />
+				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+				<div class="question_wrapper">
+					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
+					<span class="question_category">
+						[Whole Numbers] Addition and Subtraction of Whole Numbers
+					</span>
+					<span class="question_difficulty">(2 Marks, Normal)</span>
+					Extra content of Question here!
+					Question 5!
+				</div>
+			</li>
+		</ul>
+		<input type="button" id="addSection" value="Add Section" />
+		<li style="display: none;" id="newSectionTemplate">
+			<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
+			<input type="hidden" name="question_sequence[]" value="1" />
+			<select class="sectionType">
+				<option value="">Select Type for Section</option>
+				<option value="title">Title</option>
+				<option value="text">Text</option>
+			</select>
+		</li>
+		<div id="titleTemplate" style="display: none;">
+			This is title section template!
+		</div>
+		<div id="textTemplate" style="display: none;">
+			This is text section template!
+		</div>
+	</body>
+</html>
