@@ -8,8 +8,50 @@
 		<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<style>
-		#sortable { list-style-type: none; margin: 0; padding: 0; }
-		#sortable li { padding: 0.4em; padding-left: 1.5em; min-height: 18px; }
+		#sortable {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		#sortable li {
+			padding: 5px;
+			margin: 1.5em;
+			margin-left: 2.5em;
+			min-height: 18px;
+			position: relative;
+			border: 0;
+		}
+		#sortable li:focus-within {
+			border: 1px solid black;
+		}
+		#sortable li>div.ui-icon.ui-icon-arrowthick-2-n-s {
+			position: absolute;
+			display: block;
+			top: calc(-1.5em + 5px);
+			left: 0;
+			cursor: move;
+			margin: 0;
+			background-color: yellow;
+		}
+		#sortable li>div.section-remove {
+			position: absolute;
+			display: block;
+			top: calc(-1.5em + 5px);
+			right: 0;
+			cursor: pointer;
+			background-color: red;
+		}
+		.input-textarea {
+			resize: none;
+			overflow: hidden;
+			font-size: 3em;
+			line-height: 1;
+			width: 100%;
+			border: 0;
+		}
+		.input-textarea.multi-line {
+			font-size: 1em;
+		}
 		</style>
 		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -21,10 +63,12 @@
 			});
 		}
 		function reassignTrigger() {
-			$(".question-remove").off('click');
-			$(".question-remove").on('click', removeListItem);
+			$(".section-remove").off('click');
+			$(".section-remove").on('click', removeListItem);
 			$(".sectionType").off('change');
 			$(".sectionType").on('change', changeSectionType);
+			$(".input-textarea").off("input");
+			$(".input-textarea").on("input", resizeTextArea);
 		}
 		function removeListItem() {
 			$(this).closest("li").remove();
@@ -44,12 +88,20 @@
 			typeSelect.hide();
 			reassignTrigger();
 		}
+		function resizeTextArea() {
+			let theTextArea = $(this);
+			if(!theTextArea.hasClass("multi-line")) {
+				theTextArea.val(theTextArea.val().replace(/\s/g, " "));
+			}
+			theTextArea.css("height", "5px");
+			theTextArea.css("height", (this.scrollHeight-4)+"px");
+		}
 		$( function() {
 			$("#sortable").sortable({
 				update: rearrangeSequence
 			});
-			$("#sortable").disableSelection();
-			$(".question-remove").on('click', removeListItem);
+			// $("#sortable").disableSelection();
+			$(".section-remove").on('click', removeListItem);
 			$("#addSection").on('click', function() {
 				let biggestId = 0;
 				$("#sortable>li").each(function(key, value) {
@@ -70,10 +122,10 @@
 	<body>
 		<ul id="sortable">
 			<li id="1">
+				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
+				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
 				<input type="hidden" name="question_sequence[]" value="1" />
-				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
 				<div class="question_wrapper">
-					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
 					<span class="question_category">
 						[Whole Numbers] Addition and Subtraction of Whole Numbers
 					</span>
@@ -83,10 +135,10 @@
 				</div>
 			</li>
 			<li id="2">
+				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
+				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
 				<input type="hidden" name="question_sequence[]" value="2" />
-				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
 				<div class="question_wrapper">
-					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
 					<span class="question_category">
 						[Whole Numbers] Addition and Subtraction of Whole Numbers
 					</span>
@@ -96,10 +148,10 @@
 				</div>
 			</li>
 			<li id="3">
+				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
+				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
 				<input type="hidden" name="question_sequence[]" value="3" />
-				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
 				<div class="question_wrapper">
-					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
 					<span class="question_category">
 						[Whole Numbers] Addition and Subtraction of Whole Numbers
 					</span>
@@ -109,10 +161,10 @@
 				</div>
 			</li>
 			<li id="4">
+				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
+				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
 				<input type="hidden" name="question_sequence[]" value="4" />
-				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
 				<div class="question_wrapper">
-					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
 					<span class="question_category">
 						[Whole Numbers] Addition and Subtraction of Whole Numbers
 					</span>
@@ -122,10 +174,10 @@
 				</div>
 			</li>
 			<li id="5">
+				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
+				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
 				<input type="hidden" name="question_sequence[]" value="5" />
-				<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
 				<div class="question_wrapper">
-					<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
 					<span class="question_category">
 						[Whole Numbers] Addition and Subtraction of Whole Numbers
 					</span>
@@ -137,7 +189,8 @@
 		</ul>
 		<input type="button" id="addSection" value="Add Section" />
 		<li style="display: none;" id="newSectionTemplate">
-			<a href="#" class="question-remove" title="Remove Question"><i class="fa fa-times"></i></a>
+			<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
+			<div class="section-remove" title="Remove Section"><i class="fa fa-times"></i></div>
 			<input type="hidden" name="question_sequence[]" value="1" />
 			<select class="sectionType">
 				<option value="">Select Type for Section</option>
@@ -146,10 +199,10 @@
 			</select>
 		</li>
 		<div id="titleTemplate" style="display: none;">
-			This is title section template!
+			<textarea class="input-textarea" placeholder="Add Title Text" rows="1" wrap="soft"></textarea>
 		</div>
 		<div id="textTemplate" style="display: none;">
-			This is text section template!
+			<textarea class="input-textarea multi-line" placeholder="Add Text" rows="1" wrap="soft"></textarea>
 		</div>
 	</body>
 </html>
