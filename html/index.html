@@ -7,7 +7,73 @@
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 		<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 		<style>
+		.design-wrapper,
+		.customize-wrapper {
+			max-width: 800px;
+			margin: 20px auto;
+			padding: 0;
+			border: 2px solid #72A3A8;
+			display: flex;
+			flex-direction: column;
+		}
+		.header-wrapper {
+			background-color: #3B4C5A;
+			color: #8BE8DF;
+			margin: 0;
+			padding: 10px;
+			display: flex;
+			justify-content: space-between;
+			height: 75px;
+		}
+		.design-wrapper>h4 {
+			background-color: #3B4C5A;
+			color: #8BE8DF;
+			margin: 0;
+			padding: 10px;
+			text-align: center;
+		}
+		.header-wrapper>h4 {
+			margin: 0;
+			align-self: flex-start;
+		}
+		.header-wrapper>:not(h4) {
+			align-self: flex-end;
+		}
+		.design-wrapper>.row {
+			padding: 10px;
+			border-top: 1px solid #72A3A8;
+			border-bottom: 1px solid #72A3A8;
+			margin-right: 0;
+			margin-left: 0;
+		}
+		.design-form-label {
+			margin: 0;
+			padding: 10px;
+			font-size: 15px;
+			font-weight: bold;
+		}
+		.radio-group-holder label {
+			margin: 0;
+			padding: 5px;
+		}
+		#question_count_slider {
+			width: 80%;
+		}
+		#question-count-span {
+			width: 15%;
+			text-align: center;
+		}
+		#level_subject_select,
+		#topics_select,
+		#objectives_select {
+			width: 100%;
+		}
 		#sortable {
 			list-style-type: none;
 			margin: 0;
@@ -15,20 +81,24 @@
 		}
 		#sortable li {
 			padding: 5px;
-			margin: 1.5em;
-			margin-left: 2.5em;
+			/*margin: 1.5em;*/
+			/*margin-left: 2.5em;*/
 			min-height: 18px;
 			position: relative;
-			border: 0;
+			border-top: 1px solid #72A3A8;
+			border-bottom: 1px solid #72A3A8;
+			padding: 20px;
+			padding-top: 40px;
 		}
 		#sortable li:focus-within {
 			border: 1px solid black;
 		}
-		#sortable li>div.ui-icon.ui-icon-arrowthick-2-n-s {
+		/*#sortable li>div.ui-icon.ui-icon-arrowthick-2-n-s {*/
+		#sortable li>div.arrow-wrapper {
 			position: absolute;
 			display: block;
-			top: calc(-1.5em + 5px);
-			left: 0;
+			top: 5px;
+			left: 5px;
 			cursor: move;
 			margin: 0;
 			background-color: yellow;
@@ -36,10 +106,10 @@
 		#sortable li>div.section-remove {
 			position: absolute;
 			display: block;
-			top: calc(-1.5em + 5px);
-			right: 0;
+			top: 5px;
+			right: 5px;
 			cursor: pointer;
-			background-color: red;
+			/*background-color: red;*/
 		}
 		.input-textarea {
 			resize: none;
@@ -52,9 +122,15 @@
 		.input-textarea.multi-line {
 			font-size: 1em;
 		}
+		.design-button-holder>* {
+			width: 200px;
+			margin: 10px auto;
+		}
+		.customize-button-holder>* {
+			width: 150px;
+			margin: 10px auto;
+		}
 		</style>
-		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<script>
 		function rearrangeSequence() {
 			let order = 1;
@@ -94,7 +170,10 @@
 				theTextArea.val(theTextArea.val().replace(/\s/g, " "));
 			}
 			theTextArea.css("height", "5px");
-			theTextArea.css("height", (this.scrollHeight-4)+"px");
+			theTextArea.css("height", (this.scrollHeight)+"px");
+		}
+		function updateQuestionCount() {
+			$("#question-count-span").html($("#question_count_slider").val());
 		}
 		$( function() {
 			$("#sortable").sortable({
@@ -116,93 +195,272 @@
 				$("#sortable").append(newField);
 				reassignTrigger();
 			});
+			$("#question_count_slider").on('input change', updateQuestionCount);
+			updateQuestionCount();
+			$("#level_subject_select").select2();
+			$("#topics_select").select2();
+			$("#objectives_select").select2();
 		} );
 		</script>
 	</head>
 	<body>
-		<ul id="sortable">
-			<li id="1">
-				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
-				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
-				<input type="hidden" name="question_sequence[]" value="1" />
-				<div class="question_wrapper">
-					<span class="question_category">
-						[Whole Numbers] Addition and Subtraction of Whole Numbers
-					</span>
-					<span class="question_difficulty">(2 Marks, Normal)</span>
-					Extra content of Question here!
-					Question 1!
+		<h1 class="text-center my-4">Design</h1>
+		<form action="#">
+			<div class="design-wrapper">
+				<h4>Start Generating Worksheet</h4>
+				<div class="row">
+					<div class="col-4 d-flex flex-row justify-content-end">
+						<span class="design-form-label">Question Bank :</span>
+					</div>
+					<div class="col-8 d-flex flex-row align-items-center justify-content-around radio-group-holder">
+						<div class="d-flex flex-row align-items-center">
+							<input type="radio" name="question_bank" value="public" id="public_question" checked="checked" />
+							<label for="public_question">Public Question</label>
+						</div>
+						<div class="d-flex flex-row align-items-center">
+							<input type="radio" name="question_bank" value="private" id="private_question" />
+							<label for="private_question">Private Question</label>
+						</div>
+					</div>
 				</div>
-			</li>
-			<li id="2">
-				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
-				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
-				<input type="hidden" name="question_sequence[]" value="2" />
-				<div class="question_wrapper">
-					<span class="question_category">
-						[Whole Numbers] Addition and Subtraction of Whole Numbers
-					</span>
-					<span class="question_difficulty">(2 Marks, Normal)</span>
-					Extra content of Question here!
-					Question 2!
+				<div class="row">
+					<div class="col-4 d-flex flex-row justify-content-end">
+						<span class="design-form-label">Number of question :</span>
+					</div>
+					<div class="col-8 d-flex flex-row align-items-center justify-content-around radio-group-holder">
+						<input type="range" class="custom-range" id="question_count_slider" name="question_count" min="1" max="20" value="5" />
+						<span id="question-count-span"></span>
+					</div>
 				</div>
-			</li>
-			<li id="3">
-				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
-				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
-				<input type="hidden" name="question_sequence[]" value="3" />
-				<div class="question_wrapper">
-					<span class="question_category">
-						[Whole Numbers] Addition and Subtraction of Whole Numbers
-					</span>
-					<span class="question_difficulty">(2 Marks, Normal)</span>
-					Extra content of Question here!
-					Question 3!
+				<div class="row">
+					<div class="col-4 d-flex flex-row justify-content-end">
+						<span class="design-form-label">Level & Subject :</span>
+					</div>
+					<div class="col-8 d-flex flex-row align-items-center justify-content-around radio-group-holder">
+						<select name="level_subject" id="level_subject_select">
+							<optgroup label="Math">
+								<option value="math_primary_1">Primary 1 Math</option>
+								<option value="math_primary_2">Primary 2 Math</option>
+								<option value="math_primary_3">Primary 3 Math</option>
+								<option value="math_primary_4">Primary 4 Math</option>
+								<option value="math_primary_5">Primary 5 Math</option>
+								<option value="math_primary_6">Primary 6 Math</option>
+								<option value="math_secondary_1">Secondary 1 Math</option>
+								<option value="math_secondary_2">Secondary 2 Math</option>
+								<option value="math_secondary_3">Secondary 3 Math</option>
+								<option value="math_secondary_4">Secondary 4 Math</option>
+								<option value="math_secondary_5">Secondary 5 Math</option>
+							</optgroup>
+							<optgroup label="Science">
+								<option value="science_primary_3">Primary 3 Science</option>
+								<option value="science_primary_4">Primary 4 Science</option>
+								<option value="science_primary_5">Primary 5 Science</option>
+								<option value="science_primary_6">Primary 6 Science</option>
+							</optgroup>
+						</select>
+					</div>
+					<div class="col-12">
+						<span class="text-muted small">On this select changes, we could call AJAX to get list of Strands and Topics for the selected subject. Along with whether it needs to be disabled based on the level selected.</span>
+					</div>
 				</div>
-			</li>
-			<li id="4">
-				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
-				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
-				<input type="hidden" name="question_sequence[]" value="4" />
-				<div class="question_wrapper">
-					<span class="question_category">
-						[Whole Numbers] Addition and Subtraction of Whole Numbers
-					</span>
-					<span class="question_difficulty">(2 Marks, Normal)</span>
-					Extra content of Question here!
-					Question 4!
+				<div class="row">
+					<div class="col-4 d-flex flex-row justify-content-end">
+						<span class="design-form-label">Topics :</span>
+					</div>
+					<div class="col-8 d-flex flex-row align-items-center justify-content-around radio-group-holder">
+						<select name="topics" id="topics_select">
+							<option value="0">Any Strands - Any Topic</option>
+							<optgroup label="Whole Numbers">
+								<option value="whole_numbers_any_topic">Whole Numbers - Any Topics</option>
+								<option value="whole_numbers_concepts_of_whole_numbers">Whole Numbers - Concepts of Whole Numbers</option>
+								<option value="whole_numbers_addition_and_subtraction">Whole Numbers - Addition and Subtraction of Whole Numbers</option>
+								<option value="whole_numbers_multiplication_and_division">Whole Numbers - Multiplication and Division of Whole Numbers</option>
+								<option value="whole_numbers_factors_and_multiples" disabled="disabled">Whole Numbers - Factors and Mutiples</option>
+								<option value="whole_numbers_rounding_estimation" disabled="disabled">Whole Numbers - Rounding off & Estimation</option>
+								<option value="whole_numbers_four_operations" disabled="disabled">Whole Numbers - Four Operations and Order of Operations of Whole Numbers</option>
+								<option value="whole_numbers_word_problems">Word Problems involving Whole Numbers</option>
+							</optgroup>
+							<optgroup label="Money">
+								<option value="money_any_topic">Money - Any Topics</option>
+								<option value="money_concepts_of_money">Money - Concepts of Money</option>
+								<option value="money_word_problems">Word Problems involving Money</option>
+							</optgroup>
+						</select>
+					</div>
 				</div>
-			</li>
-			<li id="5">
-				<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
-				<div class="section-remove" title="Remove Question"><i class="fa fa-times"></i></div>
-				<input type="hidden" name="question_sequence[]" value="5" />
-				<div class="question_wrapper">
-					<span class="question_category">
-						[Whole Numbers] Addition and Subtraction of Whole Numbers
-					</span>
-					<span class="question_difficulty">(2 Marks, Normal)</span>
-					Extra content of Question here!
-					Question 5!
+				<div class="row">
+					<div class="col-4 d-flex flex-row justify-content-end">
+						<span class="design-form-label">Learning Objectives :</span>
+					</div>
+					<div class="col-8 d-flex flex-row align-items-center justify-content-around radio-group-holder">
+						<select name="objectives" id="objectives_select">
+							<option value="0">Any Objectives</option>
+							<option value="test_objective1">Test Objective 1</option>
+							<option value="test_objective2">Test Objective 2</option>
+							<option value="test_objective3">Test Objective 3</option>
+						</select>
+					</div>
 				</div>
-			</li>
-		</ul>
-		<input type="button" id="addSection" value="Add Section" />
-		<li style="display: none;" id="newSectionTemplate">
-			<div class="ui-icon ui-icon-arrowthick-2-n-s"></div>
-			<div class="section-remove" title="Remove Section"><i class="fa fa-times"></i></div>
-			<input type="hidden" name="question_sequence[]" value="1" />
-			<select class="sectionType">
-				<option value="">Select Type for Section</option>
-				<option value="title">Title</option>
-				<option value="text">Text</option>
-			</select>
-		</li>
-		<div id="titleTemplate" style="display: none;">
-			<textarea class="input-textarea" placeholder="Add Title Text" rows="1" wrap="soft"></textarea>
-		</div>
-		<div id="textTemplate" style="display: none;">
-			<textarea class="input-textarea multi-line" placeholder="Add Text" rows="1" wrap="soft"></textarea>
-		</div>
+				<div class="row">
+					<div class="col-4 d-flex flex-row justify-content-end">
+						<span class="design-form-label">Question Types :</span>
+					</div>
+					<div class="col-8 d-flex flex-row align-items-center justify-content-around radio-group-holder">
+						<div class="d-flex flex-row align-items-center">
+							<input type="radio" name="question_type" value="mcq" id="mcq" />
+							<label for="mcq">Multiple Choice Questions</label>
+						</div>
+						<div class="d-flex flex-row align-items-center">
+							<input type="radio" name="question_type" value="open_question" id="non_mcq" />
+							<label for="non_mcq">Open Ended Questions</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-4 d-flex flex-row justify-content-end">
+						<span class="design-form-label">Difficulty Level :</span>
+					</div>
+					<div class="col-8 d-flex flex-row align-items-center justify-content-around radio-group-holder">
+						<div class="d-flex flex-row align-items-center">
+							<input type="hidden" name="difficulty_easy" value="0" />
+							<input type="checkbox" name="difficulty_easy" value="1" id="easy" />
+							<label for="easy">Easy</label>
+						</div>
+						<div class="d-flex flex-row align-items-center">
+							<input type="hidden" name="difficulty_normal" value="0" />
+							<input type="checkbox" name="difficulty_normal" value="1" id="normal" checked="checked" />
+							<label for="normal">Normal</label>
+						</div>
+						<div class="d-flex flex-row align-items-center">
+							<input type="hidden" name="difficulty_hard" value="0" />
+							<input type="checkbox" name="difficulty_hard" value="1" id="hard" />
+							<label for="hard">Hard</label>
+						</div>
+						<div class="d-flex flex-row align-items-center">
+							<input type="hidden" name="difficulty_genius" value="0" />
+							<input type="checkbox" name="difficulty_genius" value="1" id="genius" />
+							<label for="genius">Genius</label>
+						</div>
+					</div>
+				</div>
+				<div class="d-flex flex-row justify-content-center design-button-holder">
+					<input type="submit" class="btn btn-success" value="Generate Question" />
+					<input type="reset" class="btn btn-outline-secondary" value="Reset" />
+				</div>
+			</div>
+		</form>
+		<h1 class="text-center my-4">Customize</h1>
+		<form action="#">
+			<div class="customize-wrapper">
+				<div class="header-wrapper">
+					<h4>Generate Questions</h4>
+					<input type="button" class="btn btn-sm btn-success" value="Regenerate All" />
+				</div>
+				<ul id="sortable">
+					<li id="1">
+						<div class="arrow-wrapper btn-sm btn-warning"><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>Drag to re-order</div>
+						<div class="section-remove btn-sm btn-danger" title="Remove Question"><i class="fa fa-times"></i></div>
+						<input type="hidden" name="question_sequence[]" value="1" />
+						<div class="question_wrapper">
+							<span class="question_category">
+								[Whole Numbers] Addition and Subtraction of Whole Numbers
+							</span>
+							<span class="question_difficulty">(2 Marks, Normal)</span>
+							Extra content of Question here!
+							Question 1!
+						</div>
+					</li>
+					<li id="2">
+						<div class="arrow-wrapper btn-sm btn-warning"><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>Drag to re-order</div>
+						<div class="section-remove btn-sm btn-danger" title="Remove Question"><i class="fa fa-times"></i></div>
+						<input type="hidden" name="question_sequence[]" value="2" />
+						<div class="question_wrapper">
+							<span class="question_category">
+								[Whole Numbers] Addition and Subtraction of Whole Numbers
+							</span>
+							<span class="question_difficulty">(2 Marks, Normal)</span>
+							Extra content of Question here!
+							Question 2!
+						</div>
+					</li>
+					<li id="3">
+						<div class="arrow-wrapper btn-sm btn-warning"><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>Drag to re-order</div>
+						<div class="section-remove btn-sm btn-danger" title="Remove Question"><i class="fa fa-times"></i></div>
+						<input type="hidden" name="question_sequence[]" value="3" />
+						<div class="question_wrapper">
+							<span class="question_category">
+								[Whole Numbers] Addition and Subtraction of Whole Numbers
+							</span>
+							<span class="question_difficulty">(2 Marks, Normal)</span>
+							Extra content of Question here!
+							Question 3!
+						</div>
+					</li>
+					<li id="4">
+						<div class="arrow-wrapper btn-sm btn-warning"><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>Drag to re-order</div>
+						<div class="section-remove btn-sm btn-danger" title="Remove Question"><i class="fa fa-times"></i></div>
+						<input type="hidden" name="question_sequence[]" value="4" />
+						<div class="question_wrapper">
+							<span class="question_category">
+								[Whole Numbers] Addition and Subtraction of Whole Numbers
+							</span>
+							<span class="question_difficulty">(2 Marks, Normal)</span>
+							Extra content of Question here!
+							Question 4!
+						</div>
+					</li>
+					<li id="5">
+						<div class="arrow-wrapper btn-sm btn-warning"><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>Drag to re-order</div>
+						<div class="section-remove btn-sm btn-danger" title="Remove Question"><i class="fa fa-times"></i></div>
+						<input type="hidden" name="question_sequence[]" value="5" />
+						<div class="question_wrapper">
+							<span class="question_category">
+								[Whole Numbers] Addition and Subtraction of Whole Numbers
+							</span>
+							<span class="question_difficulty">(2 Marks, Normal)</span>
+							Extra content of Question here!
+							Question 5!
+						</div>
+					</li>
+				</ul>
+				<div class="d-flex flex-row justify-content-center customize-button-holder">
+					<input type="button" class="btn btn-secondary" id="addSection" value="Add Section" />
+					<input type="submit" class="btn btn-success" id="saveForm" value="Submit Form" />
+				</div>
+				<li style="display: none;" id="newSectionTemplate">
+					<div class="arrow-wrapper btn-sm btn-warning"><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>Drag to re-order</div>
+					<div class="section-remove btn-sm btn-danger" title="Remove Section"><i class="fa fa-times"></i></div>
+					<input type="hidden" name="question_sequence[]" value="1" />
+					<select class="sectionType">
+						<option value="">Select Type for Section</option>
+						<option value="title">Title</option>
+						<option value="text">Text</option>
+						<option disabled="true">  ---  </option>
+						<option disabled="true">Also able to add ability to generate question here</option>
+						<option disabled="true">It should be possible to generate content via AJAX</option>
+						<option disabled="true">Then append it into the section for new sections</option>
+						<option disabled="true">We could use the ordering sequence number to index the contents sent to server</option>
+						<option disabled="true">using the name like the following to send to PHP :</option>
+						<option disabled="true">  section[1][type], example for question(s)</option>
+						<option disabled="true">  section[1][question],</option>
+						<option disabled="true">  section[1][answer],</option>
+						<option disabled="true">  section[1][choice][1],</option>
+						<option disabled="true">  section[1][choice][2],</option>
+						<option disabled="true">  section[1][choice][3],</option>
+						<option disabled="true">  section[1][choice][4],</option>
+						<option disabled="true">  section[2][type], example for title(s) / text(s)</option>
+						<option disabled="true">  section[2][text]</option>
+						<option disabled="true">  ---  </option>
+						<option disabled="true">After picking adding new section, we could also allow user to pick the difficulty, etc here</option>
+					</select>
+				</li>
+				<div id="titleTemplate" style="display: none;">
+					<textarea class="input-textarea" placeholder="Add Title Text" rows="1" wrap="soft"></textarea>
+				</div>
+				<div id="textTemplate" style="display: none;">
+					<textarea class="input-textarea multi-line" placeholder="Add Text" rows="1" wrap="soft"></textarea>
+				</div>
+			</div>
+		</form>
 	</body>
 </html>
